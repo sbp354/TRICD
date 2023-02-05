@@ -54,7 +54,7 @@ def get_recall(gt_data, pred_data,  topk=[1], iou_thresh=0.5):
     for img in tqdm(gt_data["images"]):
         if not img["positive"]:
             continue
-            
+          
         phrase_type = None
         if img["source"] == "winoground":
             phrase_type = "winoground"
@@ -73,7 +73,6 @@ def get_recall(gt_data, pred_data,  topk=[1], iou_thresh=0.5):
         for p in all_preds:
             pid2pred[str(p["pid"])].append(p["box"])
         
-        #print(img)
         for pid in img["phrases"]:
             pid = str(pid)
             if len(pid2pred[pid])==0:
@@ -121,7 +120,7 @@ def get_recall(gt_data, pred_data,  topk=[1], iou_thresh=0.5):
         table.add_row([header] + cur_results)
 
     print(table)
-    return results[topk]
+    return results[topk[0]]
 
 
 def get_group_recall(gt_data, pred_data, topk=[1], iou_thresh=0.5):
@@ -240,6 +239,6 @@ def get_group_recall(gt_data, pred_data, topk=[1], iou_thresh=0.5):
         table.add_row([header] + cur_results)
         
     print(table)
-    return results[topk]
+    return results[topk[0]]
 
 

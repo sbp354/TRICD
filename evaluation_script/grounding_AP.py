@@ -525,7 +525,7 @@ def get_AP(data_gt, coco_gt, data_pred) :
     
     evaluator.accumulate()
     evaluator.summarize()
-    result_dict.update({"Winoground": [evaluator.stats[0]]})
+    result_dict.update({"winoground": [evaluator.stats[0]]})
     
     evaluator._paramsEval.imgIds = []
     for img in data_gt["images"]:
@@ -543,6 +543,6 @@ def get_AP(data_gt, coco_gt, data_pred) :
     
     evaluator.accumulate()
     evaluator.summarize()
-    result_dict.update({"coco_rel_AP": [evaluator.stats[0]]})
+    result_dict.update({"coco_rel": [evaluator.stats[0]]})
     
     return result_dict

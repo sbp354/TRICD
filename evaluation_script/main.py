@@ -6,8 +6,6 @@ import os
 import contextlib
 from sklearn.metrics import f1_score
 
-from __future__ import annotations
-
 from typing import Any, Dict, Optional, Tuple
 
 
@@ -22,7 +20,7 @@ def grounding_eval(gt_file, pred_data):
     with open(gt_file) as f:
         gt_data = json.load(f)['grounding']
     
-    with open("gt_grounding_annotations.json") as f:
+    with open("gt_grounding_annotations.json", 'w') as f:
         json.dump(gt_data, f)
     
     with open(os.devnull, "w") as devnull:
@@ -63,32 +61,33 @@ def grounding_eval(gt_file, pred_data):
 
 def VQA_eval(gt_file, pred_data):
     with open(gt_file) as f:
-        gt_data = json.load(f)['VQA']
+        gt_data = json.load(f)['vqa']
     
     image_ids = [a['image_id'] for a in gt_data['annotations']]
     gt_answers = [a['answer'] for a in gt_data['annotations']]
-    pred_answers = [pred_data[i] for i in image_ids]
+    pred_answers = [pred_data[str(i)] for i in image_ids]
 
     results = {}
     results['all'] = f1_score(gt_answers, pred_answers, average = 'macro')
 
     #Subgroups
+    id2source = {a['image_id']: a['source'] if a['source']=='winoground' else a['coco_type'] for a in gt_data['annotations']}
     ## Winoground
-    win_img_ids = [a['image_id'] for a in gt_data['annotations'] if a['source']=='winoground']
-    win_gt_answers = [a['answer'] for a in gt_data['annotations'] if a.isin(win_img_ids)]
-    win_pred_answers = [pred_data[i] for i in win_img_ids]
+    win_img_ids = [k for k, v in id2source.items() if v=='winoground']
+    win_gt_answers = [a['answer'] for a in gt_data['annotations'] if a['image_id'] in(win_img_ids)]
+    win_pred_answers = [pred_data[str(i)] for i in win_img_ids]
     results['winoground'] = f1_score(win_gt_answers, win_pred_answers, average = 'macro')
 
     ## COCO_obj
-    coco_obj_img_ids = [a['image_id'] for a in gt_data['annotations'] if (a['source']=='coco_test2017' &  a['coco_type']=='object')]
-    coco_obj_gt_answers = [a['answer'] for a in gt_data['annotations'] if a.isin(coco_obj_img_ids)]
-    coco_obj_pred_answers = [pred_data[i] for i in coco_obj_img_ids]
+    coco_obj_img_ids = [k for k, v in id2source.items() if v=='object']
+    coco_obj_gt_answers = [a['answer'] for a in gt_data['annotations'] if a['image_id'] in(coco_obj_img_ids)]
+    coco_obj_pred_answers = [pred_data[str(i)] for i in coco_obj_img_ids]
     results['coco_obj'] = f1_score(coco_obj_gt_answers, coco_obj_pred_answers, average = 'macro')
 
     ## COCO_rel
-    coco_rel_img_ids = [a['image_id'] for a in gt_data['annotations'] if (a['source']=='coco_test2017' &  a['coco_type']=='relation')]
-    coco_rel_gt_answers = [a['answer'] for a in gt_data['annotations'] if a.isin(coco_rel_img_ids)]
-    coco_rel_pred_answers = [pred_data[i] for i in coco_rel_img_ids]
+    coco_rel_img_ids = [k for k, v in id2source.items() if v=='relation']
+    coco_rel_gt_answers = [a['answer'] for a in gt_data['annotations'] if a['image_id'] in(coco_rel_img_ids)]
+    coco_rel_pred_answers = [pred_data[str(i)] for i in coco_rel_img_ids]
     results['coco_rel'] = f1_score(coco_rel_gt_answers, coco_rel_pred_answers, average = 'macro')
 
 
@@ -116,8 +115,8 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
         #Grounding metrics are Recall@1, GroupRecall@1 and AP
         output['result']['grounding'] = grounding_eval(test_annotation_file, pred_data['grounding'])
     
-    if 'VQA' in pred_data:
-        output['result']['VQA'] = VQA_eval(test_annotation_file, pred_data['VQA'])
+    if 'vqa' in pred_data:
+        output['result']['vqa'] = VQA_eval(test_annotation_file, pred_data['vqa'])
 
     
     # To display the results in the result file

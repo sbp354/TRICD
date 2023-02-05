@@ -1,3 +1,4 @@
+from __future__ import annotations
 from PIL import Image
 
 import matplotlib.pyplot as plt
@@ -13,9 +14,6 @@ import numpy as np
 from collections import defaultdict
 from pycocotools import mask as maskUtils
 from torchvision.ops.boxes import box_area
-
-
-from __future__ import annotations
 
 from collections import defaultdict
 from enum import Enum, auto
