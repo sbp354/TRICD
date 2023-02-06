@@ -8,7 +8,7 @@ terms_and_conditions: templates/terms_and_conditions.html
 image: logo.jpg
 submission_guidelines: templates/submission_guidelines.html
 leaderboard_description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras egestas a libero nec sagittis.
-evaluation_script: evaluation_script.zip
+evaluation_script: evaluation_script/
 remote_evaluation: False
 is_docker_based: False
 start_date: 2019-01-01 00:00:00
@@ -19,16 +19,24 @@ leaderboard:
   - id: 1
     schema:
       {
-        "labels": ["Metric1", "Metric2", "Metric3", "Total"],
-        "default_order_by": "Total",
+        "labels": ["Recall@1", "GroupRecall@1", "AP", "F1"],
+        "default_order_by": "AP",
         "metadata": {
-          "Metric1": {
+          "Recall@1": {
             "sort_ascending": True,
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "description": "Recall when only considering the highest scoring bounding box per phrase.",
           },
-          "Metric2": {
+          "GroupRecall@1": {
             "sort_ascending": True,
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "description": "This metric can be thought of as a retrieval metric. For each phrase, it considers all predictions made (both for the positive and related negative instance, A result is considered a success if the highest scoring bounding box is associated with the positive prediction and has IOU > 0.5.",
+          },
+          "AP": {
+            "sort_ascending" : True,
+            "description": Average Precision
+          },
+          "F1":{
+            "sort_ascending" : True,
+            "description": Standard F1 score used for VQA or classification task.
           }
         }
       }
